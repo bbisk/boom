@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+        <h3>{{ room_view.name }}</h3>
+        <h4><span class="badge badge-info">Capacity: {{ room_view.capacity }} people </span></h4>
+        {% if room_equipment %}
+            <h5><span class="badge badge-secondary">Equipment:</span></h5>
+            <ul>
+                {% for item in room_equipment %}
+                    <li>{{ item.name }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if booked %}
+            <h5><span class="badge badge-warning">Booked on:</span></h5>
+            <ul>
+                {% for date in booked %}
+                    <li>{{ date }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Book this room</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Provide date, comment and user</h6>
+                <form action="{% url 'book' %}" class="form-inline" method="POST">
+                    <div class="input-group">
+                        <input type="date" name="booking_date" class="form-control" required>
+                        <input type="hidden" name="room_id" value="{{ room_view.id }}">
+                        <input type="text" name="comment" placeholder="Comment">
+                        <select name="room_user" class="form-control">
+                            {% if cookie %}
+                                {% for id, name in cookie %}
+                                    <option value="{{ id }}">{{ name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-dark">Book</button>
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2"></div>
+</div>

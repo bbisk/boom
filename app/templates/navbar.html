@@ -1,0 +1,46 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Hello
+                    {% if cookie %}
+                        {% for id, name in cookie %}
+                            {{ name }}
+                        {% endfor %}
+                    {% else %}
+                        guest
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for user in users %}
+                        <a class="dropdown-item" href="{% url 'set_user' user.id %}">{{ user.name }}</a>
+                    {% endfor %}
+                    <div class="dropdown-divider"></div>
+
+                    <a class="dropdown-item" href="{% url 'add_user' %}">Add user</a>
+                </div>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'rooms_view' %}">Rooms</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'search_view' 'search' %}">Search</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'book' %}">Book</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_room' %}">Add a room</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_equipment' %}">Add an equipment</a>
+            </li>
+        </ul>
+    </div>
+</nav>

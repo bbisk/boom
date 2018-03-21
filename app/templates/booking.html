@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+    <ul class="list-group">
+        {% for room in rooms %}
+            <li class="list-group-item">
+                <div class="btn-group">
+                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {{ room.name }}
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'room_view' room.id %}">View details</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'room_edit' room.id %}">Modify a room</a>
+                        <a class="dropdown-item" href="{% url 'room_delete' room.id %}">Delete it</a>
+                    </div>
+                </div>
+                <span class="badge badge-success float-right">Available</span></li>
+        {% endfor %}
+        {% for room in rooms_booked %}
+            <li class="list-group-item list-group-item-warning">
+                <div class="btn-group">
+                    <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        {{ room.name }}
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'room_view' room.id %}">View details</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'room_edit' room.id %}">Modify a room</a>
+                        <a class="dropdown-item" href="{% url 'room_delete' room.id %}">Delete it</a>
+                    </div>
+                </div>
+                <span class="badge badge-warning float-right">Already booked</span>
+            </li>
+        {% endfor %}
+        {% if room_view %}
+            {% include 'room.html' %}
+        {% endif %}
+        {% if search %}
+            {% include 'full_search.html' %}
+        {% endif %}
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        {% if notice %}
+            <div class="alert alert-success" role="alert">
+                {{ notice }}
+            </div>
+        {% endif %}
+{% endblock %}

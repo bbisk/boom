@@ -1,0 +1,49 @@
+{%  extends 'base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <form method="POST">
+                {% for name, type, value, label in model %}
+                    {% if type == "select_multi" or type == "select" %}
+                        <div class="form-group">
+                            <label>{{ label }}:
+                                <select class="form-control" name="{{ name }}"
+                                        {% if type == "select_multi" %}multiple{% endif %}>
+                                    {% for option in select_all %}
+                                        <option value="{{ option.id }}">{{ option.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+                    {% elif type == "select_user" %}
+                        <div class="form-group">
+                            <label>{{ label }}:
+                                <select class="form-control" name="{{ type }}">
+                                    {% for option in select_more %}
+                                        <option value="{{ option.id }}">{{ option.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label>{{ label }}: <input class="form-control" name="{{ name }}" type="{{ type }}" value="{{ value }}"> </label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="input-group-btn">
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-6 text-center">
+                            <button class="btn btn-secondary btn-lg" type="submit" name="submit">Submit</button>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div>
+                </div>
+                <div class="col-sm-3"></div>
+                {% csrf_token %}
+
+            </form>
+
+{% endblock %}
