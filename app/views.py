@@ -44,6 +44,9 @@ class GetUser():
 
 #View classes
 class RoomsView(View):
+    room_booked = GetRoom.booked_rooms(datetime.now().date())
+    rooms_booked = GetRoom.get_available_room({'id__in':room_booked})
+
     def get(self, request, slug=""):
         user_list = GetUser.get_user()
         context = {
@@ -62,13 +65,13 @@ class RoomsView(View):
                 capacity = request.GET.get('capacity')
                 equipment = request.GET.getlist('equipment')
                 booking_date = request.GET.get('date')
-                room_booked = GetRoom.booked_rooms(datetime.now().date())
+                # room_booked = GetRoom.booked_rooms(datetime.now().date())
                 search_filter = {
                     'name__icontains': name
                 }
 
                 if booking_date:
-                    room_booked = GetRoom.booked_rooms(booking_date)
+                    self.room_booked = GetRoom.booked_rooms(booking_date)
 
                     dt = datetime.strptime(booking_date, '%Y-%m-%d')
                     if dt.date() < datetime.now().date():
@@ -77,22 +80,25 @@ class RoomsView(View):
                 if capacity:
                     search_filter['capacity__gte'] = int(capacity)
 
-                if equipment:
-                    search_filter['equipment__in'] = equipment
+                rooms = GetRoom.get_available_room(search_filter)
 
-                rooms = GetRoom.get_available_room(search_filter).exclude(id__in=room_booked)
+                if equipment:
+                    for i, equipment_id in enumerate(equipment):
+                        if i == 0:
+                            rooms = rooms.filter(equipment=equipment_id)
+                        elif i >= 1:
+                            rooms = rooms and rooms.filter(equipment=equipment_id)
+
+                rooms.exclude(id__in=self.room_booked)
                 if not rooms:
                     context['error'] = "Sorry. No rooms matching criteria available on this day."
 
-                rooms_booked = Room.objects.filter(id__in=room_booked).filter(**search_filter)
+                self.rooms_booked = rooms.filter(id__in=self.room_booked)
                 context['rooms'] = rooms
-                context['rooms_booked'] = rooms_booked
             else:
-                rooms = Room.objects.all()
-                room_booked = GetRoom.booked_rooms(datetime.now().date())
-                rooms_booked = Room.objects.filter(id__in=room_booked)
-                context['rooms'] = rooms.exclude(id__in=room_booked)
-                context['rooms_booked'] = rooms_booked
+                rooms = GetRoom.get_available_room({})
+                context['rooms'] = rooms.exclude(id__in=self.room_booked)
+            context['rooms_booked'] = self.rooms_booked
 
         return render(request, TEMPLATE, context)
 
@@ -112,6 +118,7 @@ class RoomView(View):
             'cookie': Cookie.user_cookie(request)
         }
         return render(request, TEMPLATE, context)
+
 
 class RoomDeleteView(View):
     def get(self, request, id):
