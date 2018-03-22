@@ -89,15 +89,15 @@ class RoomsView(View):
                         elif i >= 1:
                             rooms = rooms and rooms.filter(equipment=equipment_id)
 
-                rooms.exclude(id__in=self.room_booked)
+                self.rooms_booked = rooms.filter(id__in=self.room_booked)
+                rooms = rooms.exclude(id__in=self.room_booked)
                 if not rooms:
                     context['error'] = "Sorry. No rooms matching criteria available on this day."
 
-                self.rooms_booked = rooms.filter(id__in=self.room_booked)
-                context['rooms'] = rooms
             else:
-                rooms = GetRoom.get_available_room({})
-                context['rooms'] = rooms.exclude(id__in=self.room_booked)
+                rooms = GetRoom.get_available_room({}).exclude(id__in=self.room_booked)
+
+            context['rooms'] = rooms
             context['rooms_booked'] = self.rooms_booked
 
         return render(request, TEMPLATE, context)
